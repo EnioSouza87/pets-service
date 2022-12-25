@@ -1,7 +1,5 @@
 import { Clients } from './clients/entities/clients.entity';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { PetsModule } from './pets/pets.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Pets } from './pets/entities/pets.entity';
@@ -18,7 +16,7 @@ import { ClientsModule } from './clients/clients.module';
     }),
     ClientsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
