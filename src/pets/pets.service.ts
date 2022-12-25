@@ -1,5 +1,5 @@
 import { CreatePetDTO } from './dtos/create-pet.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pets } from './entities/pets.entity';
 import { Repository } from 'typeorm/repository/Repository';
@@ -13,24 +13,35 @@ export class PetsService {
   async getPets() {
     try {
       const petData = await this.petsRepository.find();
-      return petData;
+      return {
+        statusCode: HttpStatus.OK,
+        data: petData,
+      };
     } catch (error) {
-      console.log(error);
+      return;
     }
   }
 
   async findOnePet(id: string) {
     try {
       const petData = await this.petsRepository.findOne({ where: { id: id } });
-      return petData;
+      return {
+        statusCode: HttpStatus.OK,
+        data: {
+          id: petData.id,
+          petName: petData.name,
+          petBreeder: petData.breed,
+          petType: petData.petType,
+        },
+      };
     } catch (error) {
-      console.log(error);
+      return;
     }
   }
 
   async createPet(body: CreatePetDTO) {
     try {
-      const data = await this.petsRepository
+      await this.petsRepository
         .createQueryBuilder()
         .insert()
         .values({
@@ -40,15 +51,24 @@ export class PetsService {
         })
         .execute();
 
-      return data;
+      return {
+        statusCode: HttpStatus.OK,
+        message: `Cadastro criado com sucesso!`,
+      };
     } catch (error) {
-      console.log(error);
+      if (error.errno === 19) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message:
+            'Não foi possível cadastrar pet! Identificação já cadastrada!',
+        };
+      }
     }
   }
 
   async updatePet(body: UpdatePetDto, id: string) {
     try {
-      const petData = await this.petsRepository
+      await this.petsRepository
         .createQueryBuilder()
         .update(Pets)
         .set({
@@ -58,10 +78,13 @@ export class PetsService {
         })
         .where('id = :id', { id: id })
         .execute();
-      console.log(petData);
-      return { ...petData };
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: `Cadastro com o id ${id} atualizado com sucesso!`,
+      };
     } catch (error) {
-      console.log(error);
+      return;
     }
   }
 
@@ -72,10 +95,12 @@ export class PetsService {
         .delete()
         .where('id = :id', { id: id })
         .execute();
-      console.log(petData);
-      return petData;
+      return {
+        statusCode: HttpStatus.OK,
+        message: `cadastro com o ${id}  deletado com sucesso!`,
+      };
     } catch (error) {
-      console.log(error);
+      return;
     }
   }
 }

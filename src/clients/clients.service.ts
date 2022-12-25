@@ -19,7 +19,7 @@ export class ClientsService {
         data: clientData,
       };
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 
@@ -31,13 +31,17 @@ export class ClientsService {
         },
       });
       return {
-        name: clientData.name,
-        lastName: clientData.lastName,
-        email: clientData.email,
-        phoneNumber: clientData.phoneNumber,
+        statusCode: HttpStatus.OK,
+        data: {
+          id: clientData.id,
+          name: clientData.name,
+          lastName: clientData.lastName,
+          email: clientData.email,
+          phoneNumber: clientData.phoneNumber,
+        },
       };
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 
@@ -101,7 +105,7 @@ export class ClientsService {
         message: `O id ${id} foi deletado com sucesso!`,
       };
     } catch (error) {
-      console.log(error);
+      return;
     }
   }
 }
